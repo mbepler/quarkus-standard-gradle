@@ -60,12 +60,6 @@ If you want to learn more about building native executables, please consult <htt
 
 ## Provided Code
 
-### REST
-
-Easily start your REST Web Services
-
-[Related guide section...](https://quarkus.io/guides/getting-started-reactive#reactive-jax-rs-resources)
-
 ## OpenApi and Swagger
 
 [OpenAPI SmallRye](https://github.com/smallrye/smallrye-open-api/) is a Quarkus extension that integrates the OpenAPI specification,
