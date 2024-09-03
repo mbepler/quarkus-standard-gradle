@@ -1,0 +1,12 @@
+services:
+
+  postgres:
+    image: postgres:latest
+    container_name: database
+    environment:
+      - POSTGRES_USER=quarkus_test
+      - POSTGRES_PASSWORD=quarkus_test
+      - POSTGRES_DB=quarkus_test
+    ports:
+      - 5432:5432
+    restart: always

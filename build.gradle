@@ -1,0 +1,125 @@
+plugins {
+    id 'java'
+    id 'io.quarkus'
+    id 'com.diffplug.spotless' version '6.22.0'
+    id 'com.github.spotbugs' version '6.0.20'
+    id 'checkstyle'
+    id 'pmd'
+}
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+dependencies {
+    implementation 'io.quarkus:quarkus-smallrye-openapi'
+    implementation 'io.quarkus:quarkus-smallrye-health'
+    implementation("io.quarkus:quarkus-hibernate-reactive-panache")
+    implementation("io.quarkus:quarkus-reactive-pg-client")
+    implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
+    implementation 'io.quarkus:quarkus-rest'
+    implementation 'io.quarkus:quarkus-rest-jackson'
+    implementation 'io.quarkus:quarkus-arc'
+    testImplementation 'io.quarkus:quarkus-junit5'
+    testImplementation 'io.rest-assured:rest-assured'
+}
+
+checkstyle {
+    toolVersion = '10.17.0'
+    configFile = file('checkstyle.xml')
+}
+
+pmd {
+    toolVersion = '7.4.0'
+}
+
+spotless {
+    java {
+        googleJavaFormat()
+        removeUnusedImports()
+        trimTrailingWhitespace()
+        indentWithSpaces()
+        endWithNewline()
+    }
+}
+
+spotbugs {
+    toolVersion = '4.8.6'
+}
+
+group = 'app'
+version = '1.0.0-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
+test {
+    systemProperty "java.util.logging.manager", "org.jboss.logmanager.LogManager"
+}
+
+compileJava {
+    options.encoding = 'UTF-8'
+    dependsOn('compileQuarkusGeneratedSourcesJava')
+}
+
+compileTestJava {
+    options.encoding = 'UTF-8'
+    dependsOn('compileQuarkusGeneratedSourcesJava')
+}
+
+tasks.register('lint') {
+    dependsOn 'formatCheck', 'checkstyle', 'pmd', 'spotbugs'
+    description = 'Runs several static code analysis.'
+    group = 'Verification'
+}
+
+tasks.register('checkstyle') {
+    dependsOn 'checkstyleMain', 'checkstyleTest'
+    description = 'Runs Checkstyle analysis for the source folder.'
+    group = 'Verification'
+}
+
+tasks.register('pmd') {
+    dependsOn    'pmdMain', 'pmdTest'
+    description = 'Runs PMD analysis for the source folder.'
+    group = 'Verification'
+}
+
+tasks.register('format') {
+    dependsOn 'spotlessApply'
+    description = 'Applies code formatting steps to source code in-place.'
+    group = 'Verification'
+}
+
+tasks.register('formatCheck') {
+    dependsOn 'spotlessCheck'
+    description = 'Checks that source code satisfies formatting steps.'
+    group = 'Verification'
+}
+
+
+tasks.register('spotbugs') {
+    dependsOn tasks.spotbugsMain, tasks.spotbugsTest
+}
+
+tasks.spotbugsMain {
+    reports.create("html") {
+        required = true
+        outputLocation = file("build/reports/spotbugs/spotbugs-main.html")
+        setStylesheet("fancy-hist.xsl")
+    }
+}
+
+tasks.spotbugsTest {
+    reports.create("html") {
+        required = true
+        outputLocation = file("build/reports/spotbugs/spotbugs-test.html")
+        setStylesheet("fancy-hist.xsl")
+    }
+}
