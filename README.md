@@ -1,4 +1,4 @@
-# travel-application
+# Standar App
 
 This project uses Quarkus, the Supersonic Subatomic Java Framework.
 
